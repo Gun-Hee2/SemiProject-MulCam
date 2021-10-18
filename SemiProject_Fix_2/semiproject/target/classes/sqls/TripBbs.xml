@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- sql 쿼리문을 작성하는 xml -->  
+
+<mapper namespace="TripBbs">
+    
+<select id="sharelist" parameterType="our.own.trip.dto.BbsParam" resultType="our.own.trip.dto.BbsDto">
+    SELECT SEQ, SORT, ID, TITLE, CONTENT, WDATE, DEL, READCOUNT
+	FROM (SELECT ROW_NUMBER()OVER(ORDER BY SEQ) AS RNUM,
+	             SEQ, SORT, ID,
+				 TITLE, CONTENT, WDATE, 
+				 DEL, READCOUNT
+		  FROM TRIP_BBS
+	<if test="choice == 'title'">
+        WHERE TITLE LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'content'">
+        WHERE CONTENT LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'id'">
+        WHERE ID=#{ search }
+    </if>
+    )
+    WHERE RNUM BETWEEN #{start} AND #{end}
+    AND SORT=1
+</select>  
+
+<select id="reviewlist" parameterType="our.own.trip.dto.BbsParam" resultType="our.own.trip.dto.BbsDto">
+    SELECT SEQ, SORT, ID, TITLE, CONTENT, WDATE, DEL, READCOUNT
+	FROM (SELECT ROW_NUMBER()OVER(ORDER BY SEQ) AS RNUM,
+	             SEQ, SORT, ID,
+				 TITLE, CONTENT, WDATE, 
+				 DEL, READCOUNT
+		  FROM TRIP_BBS
+	<if test="choice == 'title'">
+        WHERE TITLE LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'content'">
+        WHERE CONTENT LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'id'">
+        WHERE ID=#{ search }
+    </if>
+    )
+    WHERE RNUM BETWEEN #{start} AND #{end}
+    AND SORT=2
+</select>  
+
+<select id="shareAllBbs" parameterType="our.own.trip.dto.BbsParam" resultType="java.lang.Integer">
+    SELECT COUNT(*)  
+	FROM TRIP_BBS 
+	<if test="choice == 'title'">
+        WHERE TITLE LIKE '%' || #{ search } || '%'
+        AND SORT=1
+    </if>
+    <if test="choice == 'content'">
+        WHERE CONTENT LIKE '%' || #{ search } || '%'
+        AND SORT=1
+    </if>
+    <if test="choice == 'id'">
+        WHERE ID=#{ search }
+        AND SORT=1
+    </if>
+    <if test="choice == ''">
+        WHERE SORT=1
+    </if> 
+	ORDER BY SEQ
+</select>    
+
+<select id="reviewAllBbs" parameterType="our.own.trip.dto.BbsParam" resultType="java.lang.Integer">
+    SELECT COUNT(*)  
+	FROM TRIP_BBS 
+	<if test="choice == 'title'">
+        WHERE TITLE LIKE '%' || #{ search } || '%'
+        AND SORT=2
+    </if>
+    <if test="choice == 'content'">
+        WHERE CONTENT LIKE '%' || #{ search } || '%'
+        AND SORT=2
+    </if>
+    <if test="choice == 'id'">
+        WHERE ID=#{ search }
+        AND SORT=2
+    </if>
+    <!-- <if test="choice == ''">
+        WHERE SORT=2
+    </if> -->
+	ORDER BY SEQ
+</select>    
+
+<insert id="sharewriteBbs" parameterType="our.own.trip.dto.BbsDto">
+    INSERT INTO TRIP_BBS 
+				(SEQ, SORT, ID,  
+				TITLE, CONTENT, WDATE, DEL, READCOUNT) 
+				VALUES
+				(SEQ_TRIP_BBS.NEXTVAL, 1, #{ id }, 
+				#{ title }, #{ content }, SYSDATE, 0, 0)
+</insert>
+
+<insert id="reviewwriteBbs" parameterType="our.own.trip.dto.BbsDto">
+    INSERT INTO TRIP_BBS 
+				(SEQ, SORT, ID,  
+				TITLE, CONTENT, WDATE, DEL, READCOUNT) 
+				VALUES
+				(SEQ_TRIP_BBS.NEXTVAL, 2, #{ id }, 
+				#{ title }, #{ content }, SYSDATE, 0, 0)
+</insert>
+
+<update id="readcount" parameterType="Integer">
+    UPDATE TRIP_BBS 
+    SET READCOUNT=READCOUNT + 1 
+    WHERE SEQ=#{ seq }
+    AND SORT=#{ sort }
+</update>
+
+<select id="getBbs" parameterType="Integer" resultType="our.own.trip.dto.BbsDto">
+    SELECT SEQ, SORT, ID, 
+    	   TITLE, CONTENT, WDATE, DEL, READCOUNT 
+	FROM TRIP_BBS 
+	WHERE SEQ=#{ seq }
+</select>
+
+<update id="updateBbs" parameterType="our.own.trip.dto.BbsDto">
+    UPDATE TRIP_BBS 
+    SET TITLE=#{ title }, 
+        CONTENT=#{ content }
+    WHERE SEQ=#{ seq }
+</update>
+
+<update id="deleteBbs" parameterType="Integer">
+    UPDATE TRIP_BBS 
+    SET DEL=1 
+    WHERE SEQ=#{seq}
+</update>
+
+</mapper>
+
+
+
+
+
+
+
+

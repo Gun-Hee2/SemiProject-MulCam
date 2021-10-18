@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- sql 쿼리문을 작성하는 xml -->  
+
+<mapper namespace="TripMember">
+
+<select id="idcheck" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT NVL(COUNT(*), 0) 
+    FROM TRIP_MEMBER 
+    WHERE ID=#{ id }
+</select>
+
+ 
+<insert id="addmember" parameterType="our.own.trip.dto.MemberDto">
+    INSERT INTO TRIP_MEMBER(ID, PWD, NAME, EMAIL, GENDER, AUTH) 
+    VALUES(#{ id }, #{ pwd }, #{ name }, #{ email }, #{ gender }, 1)
+</insert>
+
+<select id="login" parameterType="our.own.trip.dto.MemberDto" resultType="our.own.trip.dto.MemberDto">
+    SELECT ID, NAME, EMAIL, GENDER, AUTH
+    FROM TRIP_MEMBER
+    WHERE ID=#{ id } AND PWD=#{ pwd }
+</select>
+
+
+</mapper>  
