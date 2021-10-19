@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- sql 쿼리문을 작성하는 xml -->  
+
+<mapper namespace="TripBbs">
+    
+<select id="sharelist" parameterType="our.own.trip.dto.BbsParam" resultType="our.own.trip.dto.BbsDto">
+    SELECT SEQ, ID, TITLE, CONTENT, WDATE, DEL, READCOUNT
+	FROM (SELECT ROW_NUMBER()OVER(ORDER BY SEQ) AS RNUM,
+	             SEQ, ID,
+				 TITLE, CONTENT, WDATE, 
+				 DEL, READCOUNT
+		  FROM INFORMATION
+	<if test="choice == 'title'">
+        WHERE TITLE LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'content'">
+        WHERE CONTENT LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'id'">
+        WHERE ID=#{ search }
+    </if>
+    )
+    WHERE RNUM BETWEEN #{start} AND #{end}
+</select>  
+
+<select id="reviewlist" parameterType="our.own.trip.dto.BbsParam" resultType="our.own.trip.dto.BbsDto">
+    SELECT SEQ, ID, TITLE, CONTENT, WDATE, DEL, READCOUNT
+	FROM (SELECT ROW_NUMBER()OVER(ORDER BY SEQ) AS RNUM,
+	             SEQ, ID,
+				 TITLE, CONTENT, WDATE, 
+				 DEL, READCOUNT
+		  FROM REVIEW
+	<if test="choice == 'title'">
+        WHERE TITLE LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'content'">
+        WHERE CONTENT LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'id'">
+        WHERE ID=#{ search }
+    </if>
+    )
+    WHERE RNUM BETWEEN #{start} AND #{end}
+</select>  
+
+<select id="shareAllBbs" parameterType="our.own.trip.dto.BbsParam" resultType="java.lang.Integer">
+    SELECT COUNT(*)  
+	FROM INFORMATION 
+	<if test="choice == 'title'">
+        WHERE TITLE LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'content'">
+        WHERE CONTENT LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'id'">
+        WHERE ID=#{ search }
+    </if>
+	ORDER BY SEQ
+</select>    
+
+<select id="reviewAllBbs" parameterType="our.own.trip.dto.BbsParam" resultType="java.lang.Integer">
+    SELECT COUNT(*)  
+	FROM REVIEW 
+	<if test="choice == 'title'">
+        WHERE TITLE LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'content'">
+        WHERE CONTENT LIKE '%' || #{ search } || '%'
+    </if>
+    <if test="choice == 'id'">
+        WHERE ID=#{ search }
+    </if>
+	ORDER BY SEQ
+</select>    
+
+<insert id="sharewriteBbs" parameterType="our.own.trip.dto.BbsDto">
+    INSERT INTO INFORMATION 
+				(SEQ, ID,  
+				TITLE, CONTENT, WDATE, DEL, READCOUNT) 
+				VALUES
+				(SEQ_TRIP_BBS.NEXTVAL, #{ id }, 
+				#{ title }, #{ content }, SYSDATE, 0, 0)
+</insert>
+
+<insert id="reviewwriteBbs" parameterType="our.own.trip.dto.BbsDto">
+    INSERT INTO REVIEW 
+				(SEQ, ID,  
+				TITLE, CONTENT, WDATE, DEL, READCOUNT) 
+				VALUES
+				(SEQ_TRIP_BBS.NEXTVAL, #{ id }, 
+				#{ title }, #{ content }, SYSDATE, 0, 0)
+</insert>
+
+<update id="sharereadcount" parameterType="Integer">
+    UPDATE INFORMATION 
+    SET READCOUNT=READCOUNT + 1 
+    WHERE SEQ=#{ seq }
+</update>
+
+<update id="reviewreadcount" parameterType="Integer">
+    UPDATE REVIEW 
+    SET READCOUNT=READCOUNT + 1 
+    WHERE SEQ=#{ seq }
+</update>
+
+<select id="sharegetBbs" parameterType="Integer" resultType="our.own.trip.dto.BbsDto">
+    SELECT SEQ, ID, 
+    	   TITLE, CONTENT, WDATE, DEL, READCOUNT 
+	FROM INFORMATION 
+	WHERE SEQ=#{ seq }
+</select>
+
+<select id="reviewgetBbs" parameterType="Integer" resultType="our.own.trip.dto.BbsDto">
+    SELECT SEQ, ID, 
+    	   TITLE, CONTENT, WDATE, DEL, READCOUNT 
+	FROM REVIEW 
+	WHERE SEQ=#{ seq }
+</select>
+
+<update id="shareupdateBbs" parameterType="our.own.trip.dto.BbsDto">
+    UPDATE INFORMATION 
+    SET TITLE=#{ title }, 
+        CONTENT=#{ content }
+    WHERE SEQ=#{ seq }
+</update>
+
+<update id="reviewupdateBbs" parameterType="our.own.trip.dto.BbsDto">
+    UPDATE REVIEW 
+    SET TITLE=#{ title }, 
+        CONTENT=#{ content }
+    WHERE SEQ=#{ seq }
+</update>
+
+<update id="sharedeleteBbs" parameterType="Integer">
+    UPDATE INFORMATION 
+    SET DEL=1 
+    WHERE SEQ=#{seq}
+</update>
+
+<update id="reviewdeleteBbs" parameterType="Integer">
+    UPDATE REVIEW 
+    SET DEL=1 
+    WHERE SEQ=#{seq}
+</update>
+
+</mapper>
+
+
+
+
+
+
+
+

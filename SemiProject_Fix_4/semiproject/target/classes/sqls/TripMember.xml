@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- sql 쿼리문을 작성하는 xml -->  
+
+<mapper namespace="TripMember">
+
+<select id="idcheck" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT NVL(COUNT(*), 0) 
+    FROM TRIP_MEMBER 
+    WHERE ID=#{ id }
+</select>
+
+ 
+<insert id="addmember" parameterType="our.own.trip.dto.MemberDto">
+    INSERT INTO TRIP_MEMBER(ID, PWD, NAME, EMAIL, GENDER, AUTH) 
+    VALUES(#{ id }, #{ pwd }, #{ name }, #{ email }, #{ gender }, 1)
+</insert>
+
+<select id="login" parameterType="our.own.trip.dto.MemberDto" resultType="our.own.trip.dto.MemberDto">
+    SELECT ID, NAME, EMAIL, GENDER, AUTH
+    FROM TRIP_MEMBER
+    WHERE ID=#{ id } AND PWD=#{ pwd }
+</select>
+
+<select id="mypagelist" parameterType="our.own.trip.dto.BbsParam" resultType="our.own.trip.dto.BbsDto">
+    SELECT * FROM
+    (
+      SELECT ROW_NUMBER()OVER(ORDER BY SEQ) AS RNUM, SEQ, ID, TITLE, CONTENT, WDATE, DEL, READCOUNT FROM
+      (
+      SELECT SEQ, ID, TITLE, CONTENT, WDATE, DEL, READCOUNT
+      FROM INFORMATION
+      WHERE ID=#{ id }
+      UNION
+      SELECT SEQ, ID, TITLE, CONTENT, WDATE, DEL, READCOUNT
+      FROM REVIEW
+      WHERE ID=#{ id }
+      )
+    )
+    WHERE RNUM BETWEEN #{start} AND #{end}
+    
+</select> 
+
+<select id="mypageAllBbs" parameterType="java.lang.String" resultType="java.lang.Integer">
+    
+    SELECT COUNT(*) FROM
+    (
+    SELECT *
+    FROM INFORMATION
+    UNION
+    SELECT * 
+    FROM REVIEW
+    )
+    WHERE ID=#{ id }
+    
+    
+</select>   
+
+
+
+
+
+</mapper>  
