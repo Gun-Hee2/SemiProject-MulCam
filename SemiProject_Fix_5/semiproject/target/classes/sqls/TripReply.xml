@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- sql 쿼리문을 작성하는 xml -->  
+
+<mapper namespace="TripReply">
+
+<insert id="writesharereply" parameterType="our.own.trip.dto.BbsReplyDto">
+    INSERT INTO REPLY 
+				(SEQ,   
+				ID, REPLYCONTENT, WDATE, DEL) 
+				VALUES
+				(#{ seq }, 
+				#{ id }, #{ replycontent }, SYSDATE, 0)
+</insert>
+
+<select id="replylist" parameterType="our.own.trip.dto.BbsReplyDto" resultType="our.own.trip.dto.BbsReplyDto">
+    SELECT R.SEQ, R.ID, R.REPLYCONTENT, R.WDATE 
+    FROM INFORMATION I, REPLY R
+    WHERE I.SEQ = R.SEQ
+    AND R.SEQ=#{ seq }
+</select>
+
+</mapper>

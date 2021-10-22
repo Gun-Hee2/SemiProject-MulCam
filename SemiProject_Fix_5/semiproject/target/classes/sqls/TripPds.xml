@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  
+ <mapper namespace="TripPds">
+   
+ <select id="pdslist" resultType="our.own.trip.dto.PdsDto">
+        SELECT SEQ, ID, TITLE, CONTENT, DEL, READCOUNT, 
+               FILENAME, NEWFILENAME, DOWNCOUNT, REGDATE  
+        FROM ADVERTISEMENT      
+         ORDER BY SEQ DESC
+       
+ </select>    
+   
+   <insert id="uploadPds" parameterType="our.own.trip.dto.PdsDto">
+          INSERT INTO ADVERTISEMENT(SEQ, ID, TITLE, CONTENT, FILENAME, NEWFILENAME, DEL, READCOUNT, DOWNCOUNT, REGDATE)
+          VALUES(SEQ_ADVERTISEMENT.NEXTVAL, #{id}, #{title}, #{content}, #{filename}, #{newfilename}, 0, 0, 0, SYSDATE)
+   </insert>       
+   
+   <select id="getPds" parameterType="java.lang.Integer" resultType="our.own.trip.dto.PdsDto">       
+          SELECT SEQ, ID, TITLE, CONTENT, DEL, READCOUNT, FILENAME, NEWFILENAME, DOWNCOUNT, REGDATE
+	      FROM ADVERTISEMENT
+	      WHERE SEQ=#{seq}	
+   </select>
+   
+
+ </mapper>
